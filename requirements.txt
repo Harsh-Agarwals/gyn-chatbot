@@ -1,0 +1,6 @@
+ipykernel
+pytest
+python-dotenv
+streamlit
+langchain
+chromadb
