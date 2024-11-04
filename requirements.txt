@@ -3,4 +3,12 @@ pytest
 python-dotenv
 streamlit
 langchain
-chromadb
+flask
+pypdf
+langchain-pinecone
+langchain_openai
+langchain-community
+# langchain_experimental
+pinecone[grpc]
+sentence-transformers
+# -e .
