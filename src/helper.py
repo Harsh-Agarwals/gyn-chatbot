@@ -69,11 +69,11 @@ def initialize_pinecone(index_name):
 
 def get_retriever_from_vector_store(data_split, index_name):
     embd = define_embeddings()
-    docSearch = PineconeVectorStore.from_documents(
-        documents=data_split,
-        index_name=index_name,
-        embedding=embd
-    )
+    # docSearch = PineconeVectorStore.from_documents(
+    #     documents=data_split,
+    #     index_name=index_name,
+    #     embedding=embd
+    # )
     vector_store = PineconeVectorStore.from_existing_index(
         index_name=index_name,
         embedding=embd
@@ -185,10 +185,10 @@ def invoke_rag_and_history(rag_chain, question, chat_history):
     chat_history = extend_chat_history(chat_history, question, response)
     return response, chat_history
 
-def invoke_rag_and_storein_db(rag_chain, session_id, question, chat_history):
+def invoke_rag_and_storein_db(DB_NAME, rag_chain, session_id, question, chat_history):
     response = rag_chain.invoke({"input": question, "chat_history": chat_history})['answer']
-    insert_application_logs(session_id, question, response, "gpt-40-mini")
-    chat_history = get_chat_history(session_id=session_id)
+    insert_application_logs(DB_NAME, session_id, question, response, "gpt-40-mini")
+    chat_history = get_chat_history(DB_NAME, session_id=session_id)
     return response, chat_history
 
 
@@ -209,8 +209,8 @@ def create_application_logs(DB_NAME):
                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
     conn.close()
 
-def insert_application_logs(session_id, user_query, gpt_response, model):
-    conn = connect_db()
+def insert_application_logs(DB_NAME, session_id, user_query, gpt_response, model):
+    conn = connect_db(DB_NAME)
     conn.execute('''INSERT INTO application_logs 
                  (session_id, user_query, gpt_response, model) VALUES 
                  (?, ?, ?, ?)''', (session_id, user_query, gpt_response, model))
@@ -218,8 +218,8 @@ def insert_application_logs(session_id, user_query, gpt_response, model):
     conn.commit()
     conn.close()
 
-def get_chat_history(session_id):
-    conn = connect_db()
+def get_chat_history(DB_NAME, session_id):
+    conn = connect_db(DB_NAME)
     cursor = conn.cursor()
     try:
         cursor.execute('SELECT user_query, gpt_response FROM application_logs WHERE session_id = ? ORDER BY created_at', (session_id,))
@@ -238,14 +238,14 @@ def init_application_logs(DB_NAME):
     create_application_logs(DB_NAME)
 
 def init_session_id():
-    return uuid.uuid4()
+    return str(uuid.uuid4())
 
-def question_answering(session_id, rag_chain, question):
+def question_answering(DB_NAME, session_id, rag_chain, question):
     """
     Important
     """
-    chat_history = get_chat_history(session_id=session_id)
-    answer, chat_history = invoke_rag_and_storein_db(rag_chain, session_id, question, chat_history)
+    chat_history = get_chat_history(DB_NAME, session_id=session_id)
+    answer, chat_history = invoke_rag_and_storein_db(DB_NAME, rag_chain, session_id, question, chat_history)
     return answer, chat_history
 
 
