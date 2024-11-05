@@ -28,7 +28,7 @@ Now all dependencies are installed and app is ready to run
 - import src
 - from src.helper import question_answering, from_loading_to_embedding, rag_chain_init
 
-2. Using Streamlit
+2. Using Streamlit (Under development)
 - Cloning the repository git clone git@github.com:Harsh-Agarwals/gyn-chatbot.git
 - Installing dependencies: pip install -m requirements.txt
 - Running streamlit application: streamlit run app.py
