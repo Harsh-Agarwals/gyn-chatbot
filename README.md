@@ -18,7 +18,7 @@ Here is how to run this chatbot.
 - Making a virtual environment: python -m venv venv
 - activate virtual environment: venv\Scripts\activate
 
-Now, there are 2 ways to run this application:
+## Now, there are 2 ways to run this application:
 1. Using command line
 - go to command line
 - pip install git+ssh://git@github.com/Harsh-Agarwals/gyn-chatbot.git
